@@ -1,0 +1,16 @@
+{
+  "action": "opened",
+  "issue": {
+    "number": 42,
+    "title": "Readiness board remains green after checklist edit",
+    "body": "After editing notes on a blocked subsystem checklist item and returning to the dashboard, the Readiness Board still showed all systems as green. Refreshing the page made the board correctly show a blocked state. I was not able to confirm whether this affects every subsystem.",
+    "state": "open",
+    "user": { "login": "priya-shah" },
+    "labels": [{ "name": "needs-triage" }]
+  },
+  "repository": {
+    "name": "readiness-tracker",
+    "owner": { "login": "orbitops" }
+  },
+  "sender": { "login": "priya-shah" }
+}

@@ -1,0 +1,35 @@
+# Repo Steward — manual dispatch (always dry-run).
+#
+# Lets you exercise the adapter + policy pipeline from the Actions tab
+# against a bundled fixture, without waiting for a real event and without
+# any write permissions at all.
+name: repo-steward-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      fixture:
+        description: Fixture event to replay
+        type: choice
+        required: true
+        default: issue-opened
+        options:
+          - issue-opened
+          - pull-request-opened
+          - pull-request-merged
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Replay fixture through the steward pipeline (dry-run)
+        run: |
+          npm run steward -- --event "src/github/fixtures/${{ inputs.fixture }}.json" --config .repo-steward.yml

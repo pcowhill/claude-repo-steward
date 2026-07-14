@@ -1,0 +1,19 @@
+{
+  "action": "closed",
+  "pull_request": {
+    "number": 39,
+    "title": "Add deferred checklist status and update readiness semantics",
+    "body": "Adds the deferred checklist status agreed at the W-12 review board. Docs follow-up tracked separately.",
+    "state": "closed",
+    "merged": true,
+    "draft": false,
+    "user": { "login": "alice-nguyen" },
+    "base": { "ref": "main" },
+    "head": { "ref": "feat/deferred-checklist-status" }
+  },
+  "repository": {
+    "name": "readiness-tracker",
+    "owner": { "login": "orbitops" }
+  },
+  "sender": { "login": "alice-nguyen" }
+}

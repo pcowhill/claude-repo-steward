@@ -1,0 +1,35 @@
+# Repo Steward — issue triage (dry-run by default).
+#
+# Copy into .github/workflows/ of the repository you want stewarded.
+# Writing comments/labels requires setting the repository variable
+# REPO_STEWARD_WRITE to "true"; until then every run only logs what it
+# would do. The steward never closes issues or assigns users on real
+# GitHub regardless of configuration.
+name: repo-steward-issue-triage
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+# Narrow permissions: read the repo (for .repo-steward.yml), write issues
+# (comments + labels). Nothing else.
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Run Repo Steward against the issue event
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Dry-run unless the repo explicitly opts in via a repository variable.
+          REPO_STEWARD_WRITE: ${{ vars.REPO_STEWARD_WRITE || 'false' }}
+        run: |
+          npm run steward -- --event "$GITHUB_EVENT_PATH" --config .repo-steward.yml --execute

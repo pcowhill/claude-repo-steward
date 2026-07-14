@@ -1,0 +1,41 @@
+# Repo Steward — pull request review (dry-run by default).
+#
+# Uses the plain `pull_request` trigger (NOT pull_request_target): the
+# workflow never checks out or executes PR head code with secrets — it only
+# reads the event payload and the base repo's .repo-steward.yml. For PRs
+# from forks GITHUB_TOKEN is read-only, so those runs are dry-run by
+# construction.
+name: repo-steward-pr-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the BASE repository only (trusted code + policy file).
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Collect changed files (API, no untrusted checkout)
+        id: files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FILES=$(gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --paginate --jq '.[].filename' | paste -sd, -)
+          echo "list=$FILES" >> "$GITHUB_OUTPUT"
+      - name: Run Repo Steward against the PR event
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_STEWARD_WRITE: ${{ vars.REPO_STEWARD_WRITE || 'false' }}
+        run: |
+          npm run steward -- --event "$GITHUB_EVENT_PATH" --config .repo-steward.yml \
+            --changed-files "${{ steps.files.outputs.list }}" --execute

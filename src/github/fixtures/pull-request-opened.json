@@ -1,0 +1,19 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 47,
+    "title": "Invalidate readiness rollup after checklist mutations",
+    "body": "Fixes #42.\n\nRoutes every checklist mutation through a single mutate() helper that applies the change, invalidates the rollup cache, and notifies subscribers.",
+    "state": "open",
+    "merged": false,
+    "draft": false,
+    "user": { "login": "marco-ruiz" },
+    "base": { "ref": "main" },
+    "head": { "ref": "fix/readiness-rollup-invalidation" }
+  },
+  "repository": {
+    "name": "readiness-tracker",
+    "owner": { "login": "orbitops" }
+  },
+  "sender": { "login": "marco-ruiz" }
+}
