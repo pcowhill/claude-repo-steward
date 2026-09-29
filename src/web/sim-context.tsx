@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { createSimStore, LATENCY_KEY, type SimStore } from '../sim/store';
 import type { SimState } from '../sim/types';
+import { STATIC_DEPLOY } from '../sim/hosted';
 
 const StoreContext = createContext<SimStore | null>(null);
 const ToastContext = createContext<(message: string, kind?: 'info' | 'error') => void>(() => {});
@@ -85,6 +86,11 @@ let aiStatusCache: AiStatus | null = null;
 const aiStatusListeners = new Set<() => void>();
 
 async function fetchAiStatus(): Promise<void> {
+  if (STATIC_DEPLOY) {
+    aiStatusCache = { configured: false, provider: null, model: null, reachable: false };
+    aiStatusListeners.forEach((l) => l());
+    return;
+  }
   try {
     const res = await fetch('/api/ai/status');
     const body = (await res.json()) as { configured?: boolean; provider?: string | null; model?: string | null };

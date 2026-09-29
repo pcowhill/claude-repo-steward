@@ -15,6 +15,7 @@ import {
 import type { CheckpointStage } from '../../sim/types';
 import { Icon } from './Icon';
 import { ConfirmDialog, Dropdown } from './bits';
+import { STATIC_DEPLOY, STATIC_DEPLOY_LIVE_AI_MESSAGE } from '../../sim/hosted';
 
 function StewardStatusChip() {
   const state = useSimState();
@@ -61,7 +62,9 @@ function ModeSelect() {
           const mode = e.target.value as typeof state.analysisMode;
           if (mode === 'live' && !ai?.configured) {
             toast(
-              ai?.reachable === false
+              STATIC_DEPLOY
+                ? STATIC_DEPLOY_LIVE_AI_MESSAGE
+                : ai?.reachable === false
                 ? 'Backend unreachable — start it with `npm run dev`. Live AI stays unavailable; Scripted and Mock work fully offline.'
                 : 'Live AI is not configured. Add ANTHROPIC_API_KEY or OPENAI_API_KEY to .env and restart. Scripted and Mock modes work without keys.',
               'error',
