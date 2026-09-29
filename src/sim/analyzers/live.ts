@@ -5,6 +5,7 @@ import type { SimState } from '../types';
 import { prTrees, treeToFiles } from '../mutations';
 import type { AnalyzerContext } from './scripted';
 import { buildDeferredDocsPatch, detectDeferredDocsDrift } from './docsPatch';
+import { STATIC_DEPLOY, STATIC_DEPLOY_LIVE_AI_MESSAGE } from '../hosted';
 
 /**
  * Live AI mode — client side.
@@ -139,6 +140,9 @@ export async function liveAnalyze(
   event: NormalizedEvent,
   ctx: AnalyzerContext,
 ): Promise<LiveResult> {
+  if (STATIC_DEPLOY) {
+    return { ok: false, error: STATIC_DEPLOY_LIVE_AI_MESSAGE };
+  }
   const context = buildLiveContext(state, event);
   let response: Response;
   try {

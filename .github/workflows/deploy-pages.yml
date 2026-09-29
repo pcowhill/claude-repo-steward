@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build static site
+        # Project site is served from /<repository>/. VITE_STATIC_DEPLOY tells
+        # the app there is no backend, so Live AI mode explains itself instead
+        # of failing; Scripted and Mock modes run entirely in the browser.
+        run: npm run build -- --base=/${{ github.event.repository.name }}/
+        env:
+          VITE_STATIC_DEPLOY: '1'
+      - name: Add SPA fallback for client-side routes
+        # GitHub Pages serves 404.html for unknown paths; the app router then
+        # resolves deep links such as /issues/42 on reload.
+        run: cp dist/index.html dist/404.html
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+      - name: Upload build output
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

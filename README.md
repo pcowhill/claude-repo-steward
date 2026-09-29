@@ -21,6 +21,14 @@ A teammate is not a chatbot you paste code into. A teammate:
 
 The demo is built so you can always distinguish the four layers: what the **analyzer proposed**, which **policy rules applied**, what the **policy engine decided**, and what **actually changed** in the repository.
 
+## Hosted demo
+
+A static build is published at **https://pcowhill.github.io/claude-repo-steward/**.
+It runs the simulated repository with the **Scripted demo** and **Deterministic
+mock** analyzers entirely in the browser. **Live AI** mode needs the backend
+(and an API key), so it is unavailable on the hosted site — clone the repository
+and follow the quick start below to use it.
+
 ## Quick start
 
 ```bash
